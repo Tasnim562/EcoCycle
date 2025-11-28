@@ -1,0 +1,58 @@
+import { NavigationContainer } from "@react-navigation/native";
+import { createNativeStackNavigator } from "@react-navigation/native-stack";
+import Login from "../screens/auth/LoginScreen";
+import FarmerRegister from "../screens/auth/FarmerRegister";
+import CollectorsRegister from "../screens/auth/CollectorsRegister";
+import CentersRegister from "../screens/auth/CentersRegister";
+import SupplierRegister from "../screens/auth/SupplierRegister";
+import RegisterType from "../screens/auth/RegisterType";
+import MembershipPaymentScreen from "../screens/auth/Membership";
+import { Home_supplier } from "./supplier";
+import { SupplierProvider } from "../context/SupplierContext";
+import { CompostingCenterProvider } from "../context/CompostingCenterContext";
+import { Home_composting } from "./composting_center";
+import { Home_farmer } from "./farmer";
+import { FarmerProvider } from "../context/FarmerContext";
+
+const Stack = createNativeStackNavigator();
+
+function RootStack() {
+
+  return (
+    <Stack.Navigator screenOptions={{ headerShown: false }} initialRouteName="Login" >
+
+        <Stack.Screen name="Login" component={Login} />
+
+        {/****************************************  registration components  ************************************************/}
+        <Stack.Screen name="farmer_register" component={FarmerRegister} />
+        <Stack.Screen name="collector_register" component={CollectorsRegister} />
+        <Stack.Screen name="centers_register" component={CentersRegister} />
+        <Stack.Screen name="supplier_register" component={SupplierRegister} />
+        <Stack.Screen name="userType" component={RegisterType} />
+        <Stack.Screen name="membership" component={MembershipPaymentScreen} />
+
+        {/****************************************  tabs components  ************************************************/}
+        <Stack.Screen name="home_supplier" component={Home_supplier} />
+        <Stack.Screen name="home_composting" component={Home_composting} />
+        <Stack.Screen name="home_farmer" component={Home_farmer} />
+
+
+    </Stack.Navigator>
+  );
+}
+
+export default function App() {
+  return (
+    <NavigationContainer>
+      <FarmerProvider>
+        <CompostingCenterProvider>
+          <SupplierProvider>
+          
+            <RootStack />
+          
+          </SupplierProvider>
+        </CompostingCenterProvider>
+      </FarmerProvider>
+    </NavigationContainer>
+  );
+}
