@@ -7,6 +7,7 @@ export const COLORS = {
   tertiary: '#A98467',     // Warm Brown
   dark: '#6C584C',         // Dark Brown
   white: '#FFFFFF',
+  quaternary: '#6C584C',
   black: '#000000',
   error: '#E53E3E',
   success: '#38A169',

@@ -13,6 +13,8 @@ import { CompostingCenterProvider } from "../context/CompostingCenterContext";
 import { Home_composting } from "./composting_center";
 import { Home_farmer } from "./farmer";
 import { FarmerProvider } from "../context/FarmerContext";
+import { Home_collectors } from "./collectors";
+import { NGOContextProvider } from "../context/NGOContext";
 
 const Stack = createNativeStackNavigator();
 
@@ -35,6 +37,7 @@ function RootStack() {
         <Stack.Screen name="home_supplier" component={Home_supplier} />
         <Stack.Screen name="home_composting" component={Home_composting} />
         <Stack.Screen name="home_farmer" component={Home_farmer} />
+        <Stack.Screen name="home_collectors" component={Home_collectors} />
 
 
     </Stack.Navigator>
@@ -44,15 +47,17 @@ function RootStack() {
 export default function App() {
   return (
     <NavigationContainer>
-      <FarmerProvider>
-        <CompostingCenterProvider>
-          <SupplierProvider>
+      <NGOContextProvider>
+        <FarmerProvider>
+          <CompostingCenterProvider>
+            <SupplierProvider>
+            
+              <RootStack />
           
-            <RootStack />
-          
-          </SupplierProvider>
-        </CompostingCenterProvider>
-      </FarmerProvider>
+            </SupplierProvider>
+          </CompostingCenterProvider>
+        </FarmerProvider>
+      </NGOContextProvider>
     </NavigationContainer>
   );
 }
