@@ -111,7 +111,7 @@ const Login = ({ navigation }) => {
             {/* Login Button */}
             <TouchableOpacity
               style={[styles.loginButton, loading && styles.loginButtonDisabled]}
-              onPress={()=>navigation.navigate('home_farmer')}
+              onPress={()=>navigation.navigate('home_collectors')}
               disabled={loading}
             >
               {loading ? (
