@@ -12,6 +12,8 @@ import {
 } from 'react-native';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import { COLORS, SPACING, FONT_SIZE } from '../../colors';
+import { createUserWithEmailAndPassword, getAuth } from "@react-native-firebase/auth";
+import firestore from "@react-native-firebase/firestore";
 
 const InputField = React.memo(
   ({
@@ -71,7 +73,6 @@ const FarmerRegister = ({ navigation }) => {
     name: '',
     phone: '',
     email: '',
-    fullName: '',
     password: '',
   });
   const [showPassword, setShowPassword] = useState(false);
@@ -91,7 +92,6 @@ const FarmerRegister = ({ navigation }) => {
     if (!formData.phone.trim()) newErrors.phone = 'Phone number is required';
     if (!formData.email.trim()) newErrors.email = 'Email is required';
     if (!/\S+@\S+\.\S+/.test(formData.email)) newErrors.email = 'Email is invalid';
-    if (!formData.fullName.trim()) newErrors.fullName = 'Full name is required';
     if (!formData.password) newErrors.password = 'Password is required';
     if (formData.password.length < 6) newErrors.password = 'Password must be at least 6 characters';
     setErrors(newErrors);
@@ -101,11 +101,33 @@ const FarmerRegister = ({ navigation }) => {
   const handleRegister = async () => {
     if (!validateForm()) return;
 
-    setLoading(true);
-    setTimeout(() => {
-      setLoading(false);
-      navigation.navigate('membership', { userType: 'farmer' });
-    }, 1500);
+    try{
+    const userCredential = await createUserWithEmailAndPassword(
+      getAuth(),
+      formData.email,
+      formData.password
+    );
+
+    const uid = userCredential.user.uid;
+
+    await firestore()
+      .collection("users")
+      .doc(uid) // document ID = same UID
+      .set({
+        uid: uid, // reference to the auth user
+        name: formData.name,
+        phone: formData.phone,
+        email: formData.email,
+        role: "farmer" , 
+        createdAt: firestore.FieldValue.serverTimestamp(),
+      });
+
+    console.log("User created & saved successfully!");
+
+    } catch (error) {
+      console.log("Registration error:", error.message);
+    }
+
   };
 
   return (
@@ -162,16 +184,6 @@ const FarmerRegister = ({ navigation }) => {
               value={formData.email}
               onChangeText={(v) => handleInputChange("email", v)}
               error={errors.email}
-              loading={loading}
-            />
-
-            <InputField
-              label="Full Name"
-              field="fullName"
-              icon="account-details"
-              value={formData.fullName}
-              onChangeText={(v) => handleInputChange("fullName", v)}
-              error={errors.fullName}
               loading={loading}
             />
 

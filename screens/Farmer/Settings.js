@@ -4,6 +4,7 @@ import LinearGradient from "react-native-linear-gradient"
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons"
 import { FarmerContext } from "../../context/FarmerContext"
 import { COLORS } from "../../colors"
+import auth from '@react-native-firebase/auth';
 
 export default function FarmerSettingsScreen({navigation}) {
   const { farmer } = useContext(FarmerContext)
@@ -153,6 +154,18 @@ export default function FarmerSettingsScreen({navigation}) {
     }
   ]
 
+  const handleLogout = async () => {
+    try {
+      await auth().signOut();
+      console.log("🔥 User logged out successfully!");
+      setEmail(null)
+      setPassword(null)
+      setLoading(false)
+    } catch (error) {
+      console.log("❌ Logout error:", error);
+    }
+  };
+
   return (
     <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
       {/* Enhanced Profile Header */}
@@ -193,7 +206,7 @@ export default function FarmerSettingsScreen({navigation}) {
           <Text style={styles.groupTitle}>Account</Text>
         </View>
         <View style={styles.groupContent}>
-          <TouchableOpacity style={styles.logoutButton} onPress={() => navigation.navigate('Login') }>
+          <TouchableOpacity style={styles.logoutButton} onPress={()=>handleLogout()}>
             <LinearGradient
               colors={['rgba(255, 107, 107, 0.9)', 'rgba(229, 62, 62, 0.9)']}
               style={styles.logoutGradient}
