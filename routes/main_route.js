@@ -15,57 +15,11 @@ import { Home_farmer } from "./farmer";
 import { FarmerProvider } from "../context/FarmerContext";
 import { Home_collectors } from "./collectors";
 import { NGOContextProvider } from "../context/NGOContext";
-import { useEffect, useState } from "react";
-import auth from '@react-native-firebase/auth';
-import firestore from '@react-native-firebase/firestore';
-
 
 const Stack = createNativeStackNavigator();
 
 function RootStack() {
-  const [initializing, setInitializing] = useState(true);
-  const [userRole, setUserRole] = useState(null);
 
-  useEffect(() => {
-    const subscriber = auth().onAuthStateChanged(async (user) => {
-  if (user) {
-    try {
-      const doc = await firestore().collection('users').doc(user.uid).get();
-      if (doc.exists) {
-        const role = doc.data()?.role; // optional chaining
-        if (role) {
-          setUserRole(role);
-        } else {
-          console.log("User doc exists but role missing:", doc.data());
-          setUserRole(null);
-        }
-      } else {
-        console.log("No user doc found for uid:", user.uid);
-        setUserRole(null);
-      }
-    } catch (error) {
-      console.log("Firestore fetch error:", error);
-      setUserRole(null);
-    }
-  } else {
-    setUserRole(null);
-  }
-
-  if (initializing) setInitializing(false);
-});
-
-
-    return subscriber;
-  }, []);
-
-  if (initializing) {
-    return null; // or a loading spinner
-  }
-
-  return userRole ? <AppStack role={userRole} /> : <AuthStack />;
-}
-
-function AuthStack() {
   return (
     <Stack.Navigator screenOptions={{ headerShown: false }}>
       <Stack.Screen name="Login" component={Login} />

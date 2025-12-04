@@ -104,6 +104,7 @@ const FarmerRegister = ({ navigation }) => {
 
     try{
     const userCredential = await auth().createUserWithEmailAndPassword(
+
       formData.email,
       formData.password
     );

@@ -11,6 +11,7 @@ import {
   ScrollView,
 } from 'react-native';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import auth from '@react-native-firebase/auth';
 import { COLORS, SPACING, FONT_SIZE } from '../../colors';
 import auth from '@react-native-firebase/auth';
 
@@ -72,7 +73,6 @@ const Login = ({ navigation }) => {
                   value={email}
                   onChangeText={setEmail}
                   keyboardType="email-address"
-                  editable={!loading}
                 />
               </View>
             </View>
@@ -94,7 +94,6 @@ const Login = ({ navigation }) => {
                   value={password}
                   onChangeText={setPassword}
                   secureTextEntry={!showPassword}
-                  editable={!loading}
                 />
                 <TouchableOpacity
                   onPress={() => setShowPassword(!showPassword)}
@@ -114,7 +113,7 @@ const Login = ({ navigation }) => {
               style={[styles.loginButton, loading && styles.loginButtonDisabled]}
               onPress={handleLogin}
             >
-              {loading ? (
+             {loading ? (
                 <Text style={styles.loginButtonText}>Logging in...</Text>
               ) : (
                 <Text style={styles.loginButtonText}>Login</Text>
