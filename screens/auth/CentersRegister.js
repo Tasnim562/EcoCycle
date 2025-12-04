@@ -12,6 +12,8 @@ import {
 } from 'react-native';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import { COLORS, SPACING, FONT_SIZE } from '../../colors';
+import auth from '@react-native-firebase/auth';
+import firestore from '@react-native-firebase/firestore';
 
 const CentersRegister = ({ navigation }) => {
   const [formData, setFormData] = useState({
@@ -48,11 +50,32 @@ const CentersRegister = ({ navigation }) => {
   const handleRegister = async () => {
     if (!validateForm()) return;
 
-    setLoading(true);
-    setTimeout(() => {
-      setLoading(false);
-      navigation.navigate('membership', { userType: 'composting' });
-    }, 1500);
+    try{
+    const userCredential = await auth().createUserWithEmailAndPassword(
+      formData.email,
+      formData.password
+    );
+
+    const uid = userCredential.user.uid;
+
+    await firestore()
+      .collection("users")
+      .doc(uid) // document ID = same UID
+      .set({
+        uid: uid, // reference to the auth user
+        name: formData.name,
+        phone: formData.contactNumber,
+        email: formData.email,
+        role: "composting center" , 
+        createdAt: firestore.FieldValue.serverTimestamp(),
+      });
+
+    console.log("User created & saved successfully!");
+
+    } catch (error) {
+      console.log("Registration error:", error.message);
+    }
+
   };
 
   const InputField = ({ label, field, icon, keyboardType = 'default', secureTextEntry = false }) => (

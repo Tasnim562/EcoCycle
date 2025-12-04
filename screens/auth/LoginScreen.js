@@ -12,6 +12,8 @@ import {
 } from 'react-native';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import { COLORS, SPACING, FONT_SIZE } from '../../colors';
+import auth from '@react-native-firebase/auth';
+
 
 const Login = ({ navigation }) => {
   const [email, setEmail] = useState('');
@@ -19,20 +21,19 @@ const Login = ({ navigation }) => {
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
 
-  const handleLogin = async () => {
-    if (!email || !password) {
-      alert('Please fill in all fields');
-      return;
+  const handleLogin = () =>{
+    if ( !email.trim() || !password.trim()) {
+        Alert.alert('warning' , ' all fields are required !')
+    } else {
+      auth()
+        .signInWithEmailAndPassword(email.trim(), password.trim())
+        .catch((error) => {
+            Alert.alert('Wrong Credentials', error.message, [
+            { text: 'OK', onPress: () => setLoading(false) },
+            ]);
+        });
     }
-    
-    setLoading(true);
-    // Simulate API call
-    setTimeout(() => {
-      setLoading(false);
-      // Navigate to home or dashboard
-      navigation.navigate('home_composting');
-    }, 1500);
-  };
+    }
 
   return (
     <SafeAreaView style={styles.container}>
@@ -111,8 +112,7 @@ const Login = ({ navigation }) => {
             {/* Login Button */}
             <TouchableOpacity
               style={[styles.loginButton, loading && styles.loginButtonDisabled]}
-              onPress={()=>navigation.navigate('home_collectors')}
-              disabled={loading}
+              onPress={handleLogin}
             >
               {loading ? (
                 <Text style={styles.loginButtonText}>Logging in...</Text>

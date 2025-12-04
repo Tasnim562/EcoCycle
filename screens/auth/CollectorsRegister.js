@@ -12,6 +12,9 @@ import {
 } from 'react-native';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import { COLORS, SPACING, FONT_SIZE } from '../../colors';
+import auth from '@react-native-firebase/auth';
+import firestore from '@react-native-firebase/firestore';
+
 
 const InputField = React.memo(
   ({ label, field, icon, keyboardType = 'default', secureTextEntry = false,
@@ -91,12 +94,77 @@ const CollectorsRegister = ({ navigation }) => {
   const handleRegister = async () => {
     if (!validateForm()) return;
 
+    try{
+    const userCredential = await auth().createUserWithEmailAndPassword(
+      formData.email,
+      formData.password
+    );
+
+    const uid = userCredential.user.uid;
+
+    await firestore()
+      .collection("users")
+      .doc(uid) // document ID = same UID
+      .set({
+        uid: uid, // reference to the auth user
+        name: formData.name,
+        phone: formData.phone,
+        email: formData.email,
+        role: "collector" , 
+        createdAt: firestore.FieldValue.serverTimestamp(),
+      });
+
+    console.log("User created & saved successfully!");
+
+    } catch (error) {
+      console.log("Registration error:", error.message);
+    }
+
+
+
     setLoading(true);
     setTimeout(() => {
       setLoading(false);
       navigation.navigate('membership', { userType: 'ngo' });
     }, 1500);
   };
+
+const InputField = ({ label, field, icon, keyboardType = 'default', secureTextEntry = false }) => (
+    <View style={styles.inputGroup}>
+      <Text style={styles.label}>{label}</Text>
+      <View style={[styles.inputWrapper, errors[field] && styles.inputError]}>
+        <MaterialCommunityIcons
+          name={icon}
+          size={20}
+          color={COLORS.accent}
+          style={styles.inputIcon}
+        />
+        <TextInput
+          style={styles.input}
+          placeholder={`Enter ${label.toLowerCase()}`}
+          placeholderTextColor={COLORS.mediumGray}
+          value={formData[field]}
+          onChangeText={(value) => handleInputChange(field, value)}
+          keyboardType={keyboardType}
+          secureTextEntry={secureTextEntry && !showPassword}
+          editable={!loading}
+        />
+        {field === 'password' && (
+          <TouchableOpacity
+            onPress={() => setShowPassword(!showPassword)}
+            style={styles.eyeIcon}
+          >
+            <MaterialCommunityIcons
+              name={showPassword ? 'eye' : 'eye-off'}
+              size={20}
+              color={COLORS.accent}
+            />
+          </TouchableOpacity>
+        )}
+      </View>
+      {errors[field] && <Text style={styles.errorText}>{errors[field]}</Text>}
+    </View>
+  );
 
   return (
     <SafeAreaView style={styles.container}>
